@@ -26,37 +26,37 @@ const App: Component = () => {
     name: 'kirby', 
     wordCount: 0
   }
-  const [wsStore, setWsStore] = createStore(data)
+  const [wsStore, setWsStore] = createSignal(data)
   const [tempName, setTempName] = createSignal('null')
-  const [tempWordCount, setWordCount] = createSignal(0)
+  const [tempWordCount, setTempWordCount] = createSignal(0)
   const [kirby, setKirby] = createSignal('LOADING')
-  let wsName = wsStore.name
+  const [onMessageData, setOnMessageData] = createSignal(data)
+  const [resName, setResName] = createSignal('null')
+  const [resWordCount, setResWordCount] = createSignal(0)
+  let wsName = wsStore().name
+  // vv This here on message stores 
   socket.onmessage = function (event) {
-    let tempData = { name:'kirby', wordCount:0}
     let messageRes = event.data
     let messageResArray = messageRes.split(': ')
     setTempName(messageResArray[0])
-    setWordCount(messageResArray[1].split(' ').length)
-    db.get(tempData.name).on(function (res) {
-      let newNumber = tempWordCount()
-      setKirby(res)
-      tempData.wordCount = tempWordCount() + res.wordCount
-      data = { name: tempName(), wordCount: tempData.wordCount }
+    setTempWordCount(messageResArray[1].split(' ').length)
+    setOnMessageData({ name: tempName(), wordCount: tempWordCount() })
+    db.get(onMessageData.name).on(function (res) {
+      setResName(res.name)
+      setResWordCount(res.wordCount)
+      data = { name: resName(), wordCount: tempWordCount() + resWordCount() }
       setWsStore(data)
-      setKirby(wsStore.wordCount.toString())
-    }).put(wsStore)
-
-    // console.log(wsStore)
-    // console.log(db.get(data.name))
+      setKirby(wsStore().wordCount.toString())
+    }).set(wsStore())
   }
   
   
   return (
     <div class={styles.App}>
       <header class={styles.header}>
-        <div>wsStore: -${data.name}-</div>
+        <div>wsStore: -${wsStore().name}-</div>
         <div>{kirby}</div>
-        <Table name={wsStore.name} wordCount={wsStore.wordCount} />
+        <Table name={wsStore().name} wordCount={wsStore().wordCount} />
         <img src={logo} class={styles.logo} alt="logo" />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
