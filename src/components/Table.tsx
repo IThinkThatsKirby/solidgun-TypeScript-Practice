@@ -6,7 +6,7 @@ import { Props } from "../App";
 
 const Table: Component<Props> = (props) => {
   // const [ready, set] = createEffect(props)
-  console.log(props)
+  // console.log(props)
   return <div>{props.name}</div>;
 };
 

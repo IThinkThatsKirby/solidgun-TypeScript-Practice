@@ -21,41 +21,41 @@ export type Props = {
 
 
 
-const App: Component = () => {
-  let data = {
-    name: 'kirby', 
-    wordCount: 0
-  }
-  const [wsStore, setWsStore] = createSignal(data)
-  const [tempName, setTempName] = createSignal('null')
-  const [tempWordCount, setTempWordCount] = createSignal(0)
-  const [kirby, setKirby] = createSignal('LOADING')
-  const [onMessageData, setOnMessageData] = createSignal(data)
-  const [resName, setResName] = createSignal('null')
-  const [resWordCount, setResWordCount] = createSignal(0)
-  let wsName = wsStore().name
-  // vv This here on message stores 
-  socket.onmessage = function (event) {
-    let messageRes = event.data
-    let messageResArray = messageRes.split(': ')
-    setTempName(messageResArray[0])
+let template = {
+  name: 'kirby', 
+  wordCount: 0
+}
+const [wsStore, setWsStore] = createSignal( template )
+const [tempName, setTempName] = createSignal('null')
+const [tempWordCount, setTempWordCount] = createSignal(0)
+const [kirby, setKirby] = createSignal('LOADING')
+const [onMessageData, setOnMessageData] = createSignal(template)
+const [resName, setResName] = createSignal('null')
+const [resWordCount, setResWordCount] = createSignal(0)
+let wsName = wsStore().name
+// vv This here on message stores 
+socket.onmessage = (event) => {
+  let messageRes = event.data
+  let messageResArray = messageRes.split(': ')
+  setTempName(messageResArray[0])
+  db.get(tempName(), (ack) => {
+    console.log(ack.put)
+    setResWordCount(ack.put?.wordCount || 0)
     setTempWordCount(messageResArray[1].split(' ').length)
-    setOnMessageData({ name: tempName(), wordCount: tempWordCount() })
-    db.get(onMessageData.name).on(function (res) {
-      setResName(res.name)
-      setResWordCount(res.wordCount)
-      data = { name: resName(), wordCount: tempWordCount() + resWordCount() }
-      setWsStore(data)
-      setKirby(wsStore().wordCount.toString())
-    }).set(wsStore())
-  }
+    let addCount = resWordCount()+tempWordCount()
+    setOnMessageData({ name: tempName(), wordCount: addCount })
+    // console.log(onMessageData())
+  }).put( onMessageData() )
+  // console.log(wsStore())
+}
+const App: Component = () => {
   
   
   return (
     <div class={styles.App}>
       <header class={styles.header}>
         <div>wsStore: -${wsStore().name}-</div>
-        <div>{kirby}</div>
+        <div>{tempName()}</div>
         <Table name={wsStore().name} wordCount={wsStore().wordCount} />
         <img src={logo} class={styles.logo} alt="logo" />
         <p>
