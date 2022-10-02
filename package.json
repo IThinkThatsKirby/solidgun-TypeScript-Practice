@@ -16,9 +16,7 @@
   },
   "dependencies": {
     "gun": "^0.2020.1238",
-    "lodash": "^4.17.21",
-    "socket.io": "^4.5.2",
-    "socket.io-client": "^4.5.2",
-    "solid-js": "^1.5.1"
+    "solid-js": "^1.5.1",
+    "solid-simple-table": "^1.2.0"
   }
 }

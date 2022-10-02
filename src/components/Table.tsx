@@ -1,13 +1,15 @@
-import { Component, createEffect } from "solid-js";
+import { Component, createEffect, createSignal } from "solid-js";
 import { Props } from "../App";
+import Gun from 'gun';
+// db = Database instance. refer to db.something when using the db
+const db = Gun()
 
 
-
-
+const [update, setUpdate] = createSignal('ks')
 const Table: Component<Props> = (props) => {
-  // const [ready, set] = createEffect(props)
-  // console.log(props)
-  return <div>{props.name}</div>;
+  createEffect(setUpdate(props.Oliver.wordCount))
+
+  return <div>{update}</div>; 
 };
 
 export default Table
