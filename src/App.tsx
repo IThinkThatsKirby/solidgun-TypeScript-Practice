@@ -59,9 +59,9 @@ socket.onmessage = (event) => {
 export const MyTable: Component<Props> = (props: Props) => {
   const [getRows, setRows] = createSignal(props.initialRows)
   setRows(props.initialRows)
-
   return <SimpleTable rows={getRows()} />
 }
+
 const App: Component = () => {
   return (
     <div class={styles.App}>
