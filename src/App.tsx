@@ -28,8 +28,6 @@ const [tempName, setTempName] = createSignal('null')
 const [tempWordCount, setTempWordCount] = createSignal(0)
 const [onMessageData, setOnMessageData] = createSignal(dbTemplate)// we will also use this to trigger a table update. vv
 const [resWordCount, setResWordCount] = createSignal(0)
-const [wsMessage, setWsMessage] = createSignal('WAITING FOR SERVER')
-const [foundNames, setFoundNames] = createStore(['kirby'])
 const [tableStore, setTableStore] = createStore([{name: 'LOADING', wordCount: 0}])
 type Props = {
   initialRows: typeof tableStore
@@ -45,7 +43,6 @@ socket.onmessage = (event) => {
   db.get('webSocketMessages').get(tempName(), (ack) => {
     // MAYBE I should put this callback function somewhere else and just call it by name for better readability?
     setResWordCount(ack.put?.wordCount || 0)
-    setWsMessage(messageResArray[1])
     setTempWordCount(messageResArray[1].split(' ').length)
     let addCount = resWordCount() + tempWordCount()
     setOnMessageData({ name: tempName(), wordCount: addCount })
